@@ -7,7 +7,6 @@ import streamlit as st
 class Monitor:
 
     @staticmethod
-    @st.cache_data(ttl=600)
     def read_database(engine: Engine) -> DataFrame:
         with engine.connect() as connection:
             return read_sql('measurements', connection)
