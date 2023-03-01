@@ -1,0 +1,6 @@
+.idea
+.streamlit
+*/__pycache__
+db/firebase/loof_admin.json
+db/firebase/json-to-toml.py
+*/*/__pycache__
