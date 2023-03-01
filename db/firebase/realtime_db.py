@@ -8,10 +8,19 @@ from pandas import DataFrame, to_datetime
 class FirebaseRealtime:
 
     @staticmethod
+    def initialise_firebase():
+        try:
+            cred = credentials.Certificate(dict(st.secrets["textkey"]))
+            st.session_state['firebase'] = firebase_admin.initialize_app(cred,
+                                                                         {'databaseURL': st.secrets['firebase_url']})
+            st.session_state['ref'] = db.reference('/measurements')
+        except ValueError:
+            pass
+
+    @staticmethod
     def read_db(ref) -> Optional[DataFrame]:
         backup_records = ref.get()
         if backup_records is None:
-            st.write('No backup records available.')
             return None
         else:
             df = DataFrame.from_records(ref.get())
@@ -19,7 +28,6 @@ class FirebaseRealtime:
             return df
 
     @staticmethod
-    @st.cache_data
     def backup(ref, df: DataFrame):
         """Replaces all the data stored in MySql to the Firebase realtime database.
         This procedure is performed every day around midnight."""

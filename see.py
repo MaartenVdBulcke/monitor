@@ -2,8 +2,6 @@ import streamlit as st
 from sqlalchemy.exc import OperationalError as SqlAlchemyError
 from pymysql.err import OperationalError as PyMySqlError
 from datetime import datetime
-from firebase_admin import credentials, db as fire_db
-import firebase_admin
 
 from db import MariaEngine, FirebaseRealtime
 from monitor import Monitor
@@ -11,10 +9,7 @@ from monitor import Monitor
 
 st.set_page_config(page_title='Loof monitor', page_icon='🛸')
 
-cred = credentials.Certificate(dict(st.secrets["textkey"]))
-if 'firebase' not in st.session_state:
-    st.session_state['firebase'] = firebase_admin.initialize_app(cred, {'databaseURL': st.secrets['firebase_url']})
-    st.session_state['ref'] = fire_db.reference('/measurements')
+FirebaseRealtime.initialise_firebase()
 
 try:
     engine = MariaEngine()
@@ -27,7 +22,18 @@ try:
 except (SqlAlchemyError, PyMySqlError):
     st.write('Data from firebase backup.')
     measurements = FirebaseRealtime.read_db(st.session_state['ref'])
-    if measurements is not None:
+    if measurements is None:
+        st.write('No backup records available.')
+    else:
         Monitor.render(measurements)
 
 st.button('REFRESH')
+
+if st.button('BACKUP'):
+    try:
+        engine = MariaEngine()
+        measurements = engine.read()
+        FirebaseRealtime.backup(st.session_state['ref'], measurements)
+        st.write('BACKUP SUCCEEDED')
+    except (SqlAlchemyError, PyMySqlError):
+        st.write('BACKUP FAILED')
