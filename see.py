@@ -26,6 +26,7 @@ try:
 
 except (SqlAlchemyError, PyMySqlError):
     st.write('Data from firebase backup.')
+    st.session_state['ref'] = db.reference('/measurements')
     measurements = FirebaseRealtime.read_db(st.session_state['ref'])
     if measurements is None:
         st.write('No backup records available.')
