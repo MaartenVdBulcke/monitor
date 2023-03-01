@@ -21,6 +21,7 @@ try:
     Monitor.render(measurements)
 
     if (timestamp := datetime.now()) and timestamp.hour == 0 and 0 <= timestamp.minute <= 10:
+        st.session_state['ref'] = db.reference('/measurements')
         FirebaseRealtime.backup(st.session_state['ref'], measurements)
 
 except (SqlAlchemyError, PyMySqlError):
@@ -39,10 +40,8 @@ if st.button('BACKUP'):
         measurements = engine.read()
         try:
             cred = credentials.Certificate(dict(st.secrets["textkey"]))
-            st.session_state['firebase'] = firebase_admin.initialize_app(cred,
-                                                                         {'databaseURL': st.secrets['firebase_url']})
-        except KeyError as e:
-            st.write('BACKUP FAILED', type(e).__name__, format_exc())
+            st.session_state['firebase'] = firebase_admin.initialize_app(
+                cred, {'databaseURL': st.secrets['firebase_url']})
         except ValueError as e:
             st.session_state['ref'] = db.reference('/measurements')
             FirebaseRealtime.backup(st.session_state['ref'], measurements)
