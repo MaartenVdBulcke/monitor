@@ -1,7 +1,11 @@
+from traceback import format_exc
+
 import streamlit as st
 from sqlalchemy.exc import OperationalError as SqlAlchemyError
 from pymysql.err import OperationalError as PyMySqlError
 from datetime import datetime
+import firebase_admin
+from firebase_admin import credentials, db
 
 from db import MariaEngine, FirebaseRealtime
 from monitor import Monitor
@@ -33,7 +37,16 @@ if st.button('BACKUP'):
     try:
         engine = MariaEngine()
         measurements = engine.read()
-        FirebaseRealtime.backup(st.session_state['ref'], measurements)
-        st.write('BACKUP SUCCEEDED')
+        try:
+            cred = credentials.Certificate(dict(st.secrets["textkey"]))
+            st.session_state['firebase'] = firebase_admin.initialize_app(cred,
+                                                                         {'databaseURL': st.secrets['firebase_url']})
+            st.session_state['ref'] = db.reference('/measurements')
+        except KeyError as e:
+            st.write('BACKUP FAILED', type(e).__name__, format_exc())
+        except ValueError as e:
+            FirebaseRealtime.backup(st.session_state['ref'], measurements)
+            st.write('BACKUP SUCCEEDED')
+
     except (SqlAlchemyError, PyMySqlError):
         st.write('BACKUP FAILED')

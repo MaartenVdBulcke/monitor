@@ -22,10 +22,9 @@ class FirebaseRealtime:
         backup_records = ref.get()
         if backup_records is None:
             return None
-        else:
-            df = DataFrame.from_records(ref.get())
-            df.timestamp_utc = to_datetime(df.timestamp_utc)
-            return df
+        df = DataFrame.from_records(ref.get())
+        df.timestamp_utc = to_datetime(df.timestamp_utc)
+        return df
 
     @staticmethod
     def backup(ref, df: DataFrame):
