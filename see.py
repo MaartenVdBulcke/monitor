@@ -3,9 +3,12 @@ from sqlalchemy.exc import OperationalError as SqlAlchemyError
 from pymysql.err import OperationalError as PyMySqlError
 
 from db import MariaEngine
+from firebase import initialize_firebase_realtime
 from monitor import Monitor
 
 st.set_page_config(page_title='Loof monitor', page_icon='🛸')
+
+initialize_firebase_realtime()
 
 try:
     engine = MariaEngine.get_engine()

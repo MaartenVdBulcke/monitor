@@ -1,0 +1,1 @@
+from .realtime_db import initialize_firebase_realtime
