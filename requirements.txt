@@ -3,3 +3,5 @@ plotly==5.13.1
 pymysql==1.0.2
 sqlalchemy==2.0.4
 streamlit==1.19.0
+firebase_admin==6.1.0
+protobuf==3.20.*
