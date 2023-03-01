@@ -8,7 +8,10 @@ from monitor import Monitor
 
 st.set_page_config(page_title='Loof monitor', page_icon='🛸')
 
-FirebaseRealtime.initialize_firebase_realtime()
+firebase_key = 'firebase_init'
+if firebase_key not in st.session_state:
+    FirebaseRealtime.initialize_firebase_realtime()
+    st.session_state[firebase_key] = True
 
 try:
     engine = MariaEngine()
