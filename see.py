@@ -41,10 +41,10 @@ if st.button('BACKUP'):
             cred = credentials.Certificate(dict(st.secrets["textkey"]))
             st.session_state['firebase'] = firebase_admin.initialize_app(cred,
                                                                          {'databaseURL': st.secrets['firebase_url']})
-            st.session_state['ref'] = db.reference('/measurements')
         except KeyError as e:
             st.write('BACKUP FAILED', type(e).__name__, format_exc())
         except ValueError as e:
+            st.session_state['ref'] = db.reference('/measurements')
             FirebaseRealtime.backup(st.session_state['ref'], measurements)
             st.write('BACKUP SUCCEEDED')
 
