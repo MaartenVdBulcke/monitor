@@ -4,14 +4,22 @@ import firebase_admin
 from firebase_admin import credentials, db
 from pandas import DataFrame, to_datetime
 
+firebase_key = 'firebase_init'
+
 
 class FirebaseRealtime:
 
     @staticmethod
     @st.cache_resource
     def initialize_firebase_realtime():
+
+        if firebase_key not in st.session_state:
+            st.session_state[firebase_key] = False
+
         cred = credentials.Certificate(dict(st.secrets["textkey"]))
         firebase_admin.initialize_app(cred, {'databaseURL': st.secrets['firebase_url']})
+
+        st.session_state[firebase_key] = True
 
     @staticmethod
     def read() -> Optional[DataFrame]:
