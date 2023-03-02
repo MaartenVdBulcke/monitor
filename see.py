@@ -15,6 +15,25 @@ st.set_page_config(page_title='Loof monitor', page_icon='🛸')
 
 FirebaseRealtime.initialise_firebase()
 
+_, col1, col2, _ = st.columns((4, 2, 2, 4))
+col1.button('REFRESH', use_container_width=True)
+
+if col2.button('BACKUP', use_container_width=True):
+    try:
+        engine = MariaEngine()
+        measurements = engine.read()
+        try:
+            cred = credentials.Certificate(dict(st.secrets["textkey"]))
+            st.session_state['firebase'] = firebase_admin.initialize_app(
+                cred, {'databaseURL': st.secrets['firebase_url']})
+        except ValueError as e:
+            st.session_state['ref'] = db.reference('/measurements')
+            FirebaseRealtime.backup(st.session_state['ref'], measurements)
+            col2.write('BACKUP SUCCEEDED')
+
+    except (SqlAlchemyError, PyMySqlError):
+        col2.write('BACKUP FAILED')
+
 try:
     engine = MariaEngine()
     measurements = engine.read()
@@ -32,21 +51,3 @@ except (SqlAlchemyError, PyMySqlError):
         st.write('No backup records available.')
     else:
         Monitor.render(measurements)
-
-st.button('REFRESH')
-
-if st.button('BACKUP'):
-    try:
-        engine = MariaEngine()
-        measurements = engine.read()
-        try:
-            cred = credentials.Certificate(dict(st.secrets["textkey"]))
-            st.session_state['firebase'] = firebase_admin.initialize_app(
-                cred, {'databaseURL': st.secrets['firebase_url']})
-        except ValueError as e:
-            st.session_state['ref'] = db.reference('/measurements')
-            FirebaseRealtime.backup(st.session_state['ref'], measurements)
-            st.write('BACKUP SUCCEEDED')
-
-    except (SqlAlchemyError, PyMySqlError):
-        st.write('BACKUP FAILED')
