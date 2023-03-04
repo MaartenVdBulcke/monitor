@@ -52,6 +52,6 @@ class Monitor:
         bar.update_layout(
             # title_x='center',
             title_font_size=30,
-            xaxis=dict(tickformat='%H:%M <br>%A')
+            xaxis=dict(tickformat='%H:%M <br>%A', title='')
         )
         return bar
