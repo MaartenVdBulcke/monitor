@@ -32,13 +32,15 @@ class Monitor:
         )
         if (m := latest_measurement_time.minute) < 10:
             m = f'0{m}'
+        else:
+            m = m
 
-            st.markdown(
-                f'<h5 style=text-align:center;color:darkTurquoise;>'
-                f'last measured at {latest_measurement_time.hour}h{m}'
-                f'</h5>',
-                unsafe_allow_html=True
-            )
+        st.markdown(
+            f'<h5 style=text-align:center;color:darkTurquoise;>'
+            f'last measured at {latest_measurement_time.hour}h{m}'
+            f'</h5>',
+            unsafe_allow_html=True
+        )
 
     @classmethod
     def define_plot_day(cls, df: DataFrame):
