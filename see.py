@@ -15,7 +15,7 @@ st.set_page_config(page_title='Loof monitor', page_icon='🛸')
 
 FirebaseRealtime.initialise_firebase()
 
-_, col1, col2, _ = st.columns((4, 2, 2, 4))
+_, col1, col2, col3 = st.columns((4, 2, 2, 4))
 col1.button('REFRESH', use_container_width=True)
 
 if col2.button('BACKUP', use_container_width=True):
@@ -29,7 +29,7 @@ if col2.button('BACKUP', use_container_width=True):
         except ValueError as e:
             st.session_state['ref'] = db.reference('/measurements')
             FirebaseRealtime.backup(st.session_state['ref'], measurements)
-            col2.write('BACKUP SUCCEEDED')
+            col3.write('BACKUP SUCCEEDED')
 
     except (SqlAlchemyError, PyMySqlError):
         col2.write('BACKUP FAILED')
