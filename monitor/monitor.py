@@ -1,13 +1,18 @@
 from pandas import DataFrame, Timedelta
 import plotly.express as px
 import streamlit as st
+from datetime import datetime
+from pytz import timezone
 
 
 class Monitor:
 
-    @staticmethod
-    def to_local_time(df: DataFrame) -> DataFrame:
-        df['timestamp'] = df.timestamp_utc + Timedelta(hours=1)
+    TIMEZONE = timezone('Europe/Brussels')
+
+    @classmethod
+    def to_local_time(cls, df: DataFrame) -> DataFrame:
+        zone_difference_in_hours = datetime.now().astimezone(cls.TIMEZONE).utcoffset().total_seconds() / 3600
+        df['timestamp'] = df.timestamp_utc + Timedelta(hours=zone_difference_in_hours)
         return df
 
     @classmethod
